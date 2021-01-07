@@ -49,7 +49,6 @@ class Post
     private $title;
 
     /**
-     * @Assert\NotBlank(message="N'oubliez pas votre alias.")
      * @Assert\Length(max="255", maxMessage="Attention, pas plus de 255 caractères.")
      * @ORM\Column(type="string", length=255)
      * @Groups({"post:read","post:write"})

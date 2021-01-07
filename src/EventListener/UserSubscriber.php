@@ -3,7 +3,7 @@
 
 namespace App\EventListener;
 
-
+    use App\Entity\Post;
     use App\Entity\User;
     use Doctrine\ORM\Events;
     use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -48,6 +48,7 @@ class UserSubscriber implements \Doctrine\Common\EventSubscriber
     public function prePersist(LifecycleEventArgs $args)
     {
         $this->encodePassword($args);
+        $this->generateAlias($args);
     }
 
     /**
@@ -58,6 +59,21 @@ class UserSubscriber implements \Doctrine\Common\EventSubscriber
     public function postPersist(LifecycleEventArgs $args)
     {
         $this->sendWelcomeEmail($args);
+    }
+
+    public function generateAlias(LifecycleEventArgs $args)
+    {
+        # 1. Récupération de l'Objet concerné
+        $entity = $args->getObject();
+        # 2. Si mon objet n'est pas une instance de "Post" on quitte.
+        if (!$entity instanceof Post) {
+            return;
+        }
+        //3. Formater l'alias du post
+        function slugify($string){
+            return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $string), '-'));
+        }
+        $entity->setAlias(slugify($entity->getTitle()));
     }
 
     /**
