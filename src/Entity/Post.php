@@ -2,20 +2,33 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use App\Repository\PostRepository;
-use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Repository\PostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
+ *     normalizationContext={"groups"={"post:read"}},
+ *     denormalizationContext={"groups"={"post:write"}},
  *     attributes={
- *          "pagination_items_per_page"=10,
- *          "order"={"updatedAt": "DESC"}
+ *      "pagination_items_per_page"=10,
+ *      "order"={"updatedAt": "DESC"}
  *     }
  * )
+ * @ApiFilter(SearchFilter::class, properties={
+ *      "category": "exact",
+ *      "category.alias": "exact",
+ * })
  * @ORM\Entity(repositoryClass=PostRepository::class)
+ * Tester l'API :
+ * - https://localhost:8000/api/posts?category=/api/categories/1&page=1
+ * - https://localhost:8000/api/posts?category.alias=politique&page=1
  */
 class Post
 {
@@ -23,58 +36,76 @@ class Post
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"post:read","post:write"})
      */
     private $id;
 
     /**
+     * @Assert\NotBlank(message="N'oubliez pas votre titre.")
+     * @Assert\Length(max="255", maxMessage="Attention, pas plus de 255 caractères.")
      * @ORM\Column(type="string", length=255)
+     * @Groups({"post:read","post:write"})
      */
     private $title;
 
     /**
+     * @Assert\NotBlank(message="N'oubliez pas votre alias.")
+     * @Assert\Length(max="255", maxMessage="Attention, pas plus de 255 caractères.")
      * @ORM\Column(type="string", length=255)
+     * @Groups({"post:read","post:write"})
      */
     private $alias;
 
     /**
+     * @Assert\NotBlank(message="N'oubliez pas votre contenu.")
      * @ORM\Column(type="text")
+     * @Groups({"post:read","post:write"})
      */
     private $content;
 
     /**
+     * @Assert\NotBlank(message="N'oubliez pas votre image.")
+     * @Assert\Length(max="255", maxMessage="Attention, pas plus de 255 caractères.")
      * @ORM\Column(type="string", length=255)
+     * @Groups({"post:read","post:write"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"post:read","post:write"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"post:read","post:write"})
      */
     private $updatedAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"post:read","post:write"})
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="posts")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"post:read","post:write"})
      */
     private $category;
 
     /**
      * @ORM\ManyToMany(targetEntity=Tag::class, mappedBy="posts")
+     * @Groups({"post:read","post:write"})
      */
     private $tags;
 
     /**
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="post", orphanRemoval=true)
+     * @Groups({"post:read"})
      */
     private $comments;
 

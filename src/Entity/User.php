@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource()
@@ -55,12 +56,15 @@ class User implements UserInterface
      * @Assert\Length(max="90", maxMessage="Attention, pas plus de 90 caractères.")
      * @Assert\NotBlank(message="N'oubliez pas votre prénom.")
      * @ORM\Column(type="string", length=90)
+     * @Groups({"post:read"})
      */
     private $firstname;
 
     /**
      * @Assert\Length(max="90", maxMessage="Attention, pas plus de 90 caractères.")
      * @Assert\NotBlank(message="N'oubliez pas votre nom.")
+     * @ORM\Column(type="string", length=90)
+     * @Groups({"post:read"})
      */
     private $lastname;
 

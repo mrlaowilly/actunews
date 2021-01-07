@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CommentRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource()
@@ -20,6 +21,7 @@ class Comment
     private $id;
 
     /**
+     * @Assert\NotBlank(message="N'oubliez pas de remplir le champ.")
      * @ORM\Column(type="text")
      */
     private $content;

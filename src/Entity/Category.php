@@ -2,13 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
@@ -16,10 +18,11 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *          "pagination_items_per_page"=5
  *     }
  * )
+ * cf. https://api-platform.com/docs/core/filters/#search-filter
  * @ApiFilter(
- *      SearchFilter::class, properties={
- *          "alias": "exact"
- *      }
+ *     SearchFilter::class, properties={
+ *          "alias": "exact",
+ *     }
  * )
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
  */
@@ -33,17 +36,23 @@ class Category
     private $id;
 
     /**
+     * @Assert\Length(max="150", maxMessage="Attention, pas plus de 150 caractères.")
+     * @Assert\NotBlank(message="N'oubliez pas le nom de la catégorie.")
      * @ORM\Column(type="string", length=150)
+     * @Groups({"post:read"})
      */
     private $name;
 
     /**
-     * @ORM\Column(type="text", nullable=true)  
+     * @ORM\Column(type="text", nullable=true)
      */
     private $description;
 
     /**
+     * @Assert\Length(max="150", maxMessage="Attention, pas plus de 150 caractères.")
+     * @Assert\NotBlank(message="N'oubliez pas l'alias de la catégorie.")
      * @ORM\Column(type="string", length=150, unique=true)
+     * @Groups({"post:read"})
      */
     private $alias;
 
