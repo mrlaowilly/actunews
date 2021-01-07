@@ -3,6 +3,7 @@
 
 namespace App\EventListener;
 
+    use App\Entity\Category;
     use App\Entity\Post;
     use App\Entity\User;
     use Doctrine\ORM\Events;
@@ -49,6 +50,7 @@ class UserSubscriber implements \Doctrine\Common\EventSubscriber
     {
         $this->encodePassword($args);
         $this->generateAlias($args);
+        $this->generateAliasCategory($args);
     }
 
     /**
@@ -75,6 +77,23 @@ class UserSubscriber implements \Doctrine\Common\EventSubscriber
         }
         $entity->setAlias(slugify($entity->getTitle()));
     }
+
+    public function generateAliasCategory(LifecycleEventArgs $args)
+    {
+        # 1. Récupération de l'Objet concerné
+        $entity = $args->getObject();
+        # 2. Si mon objet n'est pas une instance de "Category" on quitte.
+        if (!$entity instanceof Category) {
+            return;
+        }
+        //3. Formater l'alias de la category
+        function aliascategory($string)
+        {
+            return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $string), '-'));
+        }
+        $entity->setAlias(aliascategory($entity->getName()));
+    }
+
 
     /**
      * Permet d'encoder un mot de passe dans la BDD

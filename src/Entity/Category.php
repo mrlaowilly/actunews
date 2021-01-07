@@ -50,7 +50,6 @@ class Category
 
     /**
      * @Assert\Length(max="150", maxMessage="Attention, pas plus de 150 caractères.")
-     * @Assert\NotBlank(message="N'oubliez pas l'alias de la catégorie.")
      * @ORM\Column(type="string", length=150, unique=true)
      * @Groups({"post:read"})
      */
